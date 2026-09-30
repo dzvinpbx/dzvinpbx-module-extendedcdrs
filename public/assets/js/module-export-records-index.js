@@ -15,9 +15,9 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 /*
- * Copyright (C) MIKO LLC - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
+ * Copyright (C) MIKO LLC
+ * Licensed under the GNU General Public License v3.0 or later;
+ * see the LICENSE file in the root of this repository.
  * Written by Nikolay Beketov, 11 2018
  *
  */
