@@ -1,17 +1,17 @@
 <?php
-namespace MikoPBX\Core\System {
+namespace DzvinPBX\Core\System {
     class Util {
         public static function mwMkdir($path) { if (!is_dir($path)) mkdir($path, 0777, true); }
         public static function sysLogMsg($context, $message) { if ($GLOBALS['loggerFails'] ?? false) throw new \RuntimeException('Logger failed'); fwrite(STDERR, $message . "\n"); }
     }
 }
-namespace MikoPBX\Modules\Models {
+namespace DzvinPBX\Modules\Models {
     class ModulesModelsBase { public static function getConnectionServiceName($id) { return 'settings'; } }
 }
 namespace Modules\ModuleExtendedCDRs\Lib\Providers {
     class CdrDbProvider { const SERVICE_NAME = 'cdr'; }
 }
-namespace MikoPBX\Modules\Setup {
+namespace DzvinPBX\Modules\Setup {
     class PbxExtensionSetupBase {
         protected $moduleDir;
         protected $moduleUniqueID = 'ModuleExtendedCDRs';

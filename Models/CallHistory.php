@@ -13,7 +13,7 @@
 
 namespace Modules\ModuleExtendedCDRs\Models;
 
-use MikoPBX\Common\Models\CallDetailRecordsBase;
+use DzvinPBX\Common\Models\CallDetailRecordsBase;
 use Modules\ModuleExtendedCDRs\Lib\Providers\CdrDbProvider;
 use Phalcon\Mvc\Model\ResultsetInterface;
 use Phalcon\Mvc\Model\Resultset\Simple;
@@ -21,7 +21,7 @@ use Phalcon\Mvc\Model\Resultset\Simple;
 /**
  * Class CallDetailRecords
  *
- * @package MikoPBX\Common\Models
+ * @package DzvinPBX\Common\Models
  *
  * @Indexes(
  *     [name='start', columns=['start'], type=''],
@@ -306,7 +306,7 @@ class CallHistory extends CallDetailRecordsBase
             $function = $frame['function'] ?? '';
 
             // Проверка enable/disable модуля
-            if ($class === 'MikoPBX\\Modules\\PbxExtensionState'
+            if ($class === 'DzvinPBX\\Modules\\PbxExtensionState'
                 && in_array($function, ['makeBeforeEnableTest', 'makeBeforeDisableTest'], true)) {
                 return true;
             }

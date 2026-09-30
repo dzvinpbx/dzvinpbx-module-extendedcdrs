@@ -8,7 +8,7 @@
 
 namespace Modules\ModuleExtendedCDRs\Models;
 
-use MikoPBX\Common\Models\ModelsBase;
+use DzvinPBX\Common\Models\ModelsBase;
 use Modules\ModuleExtendedCDRs\Lib\Providers\CdrDbProvider;
 
 /**

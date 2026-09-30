@@ -13,7 +13,7 @@
 
 namespace Modules\ModuleExtendedCDRs\Models;
 
-use MikoPBX\Modules\Models\ModulesModelsBase;
+use DzvinPBX\Modules\Models\ModulesModelsBase;
 
 /**
  * @package Modules\ExportResults\Models

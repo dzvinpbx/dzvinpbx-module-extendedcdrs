@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2024 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,10 +19,10 @@
 
 namespace Modules\ModuleExtendedCDRs\Lib;
 
-use MikoPBX\Common\Models\Extensions;
-use MikoPBX\Common\Models\IncomingRoutingTable;
-use MikoPBX\Common\Providers\PBXConfModulesProvider;
-use MikoPBX\Modules\Config\CDRConfigInterface;
+use DzvinPBX\Common\Models\Extensions;
+use DzvinPBX\Common\Models\IncomingRoutingTable;
+use DzvinPBX\Common\Providers\PBXConfModulesProvider;
+use DzvinPBX\Modules\Config\CDRConfigInterface;
 use Modules\ModuleUsersGroups\Models\GroupMembers;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
@@ -31,8 +31,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use stdClass;
 use DateTime;
-use MikoPBX\Common\Models\Sip;
-use MikoPBX\Core\System\Util;
+use DzvinPBX\Common\Models\Sip;
+use DzvinPBX\Core\System\Util;
 use Modules\ModuleExtendedCDRs\bin\ConnectorDB;
 use Modules\ModuleExtendedCDRs\Models\CallHistory;
 
@@ -75,7 +75,7 @@ class GetReport
     public static function getTmpDir():string
     {
         $tmpDir = '/tmp';
-        $di = MikoPBXVersion::getDefaultDi();
+        $di = DzvinPBXVersion::getDefaultDi();
         if ($di) {
             $dirsConfig = $di->getShared('config');
             $tmpDir     = $dirsConfig->path('core.tempDir') . '/ModuleExtendedCDRs/reports/';
@@ -434,7 +434,7 @@ class GetReport
                 }
 
                 $formattedDate = date('Y-m-d-H_i', strtotime($linkedRecord->start));
-                $uid = str_replace('mikopbx-', '', $linkedRecord->linkedid);
+                $uid = str_replace('dzvinpbx-', '', $linkedRecord->linkedid);
                 $prettyFilename = "$uid-$formattedDate-$record->src_num-$record->dst_num-$record->id";
                 $linkedRecord->answered[] = [
                     'id' => $record->id,

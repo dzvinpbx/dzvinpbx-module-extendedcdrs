@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ModuleExtendedCDRs is a MikoPBX extension module for Extended Call Detail Records management and reporting. It synchronizes CDR data from Asterisk, provides call history views, generates reports (PDF/XLSX/JSON), exports via webhooks, and delivers scheduled reports by email.
+ModuleExtendedCDRs is a Dzvin PBX extension module (fork of the MikoPBX module of the same name) for Extended Call Detail Records management and reporting. It synchronizes CDR data from Asterisk, provides call history views, generates reports (PDF/XLSX/JSON), exports via webhooks, and delivers scheduled reports by email.
 
 - **Language**: PHP 7.4.6+
 - **Framework**: Phalcon 4.0 (MVC)
@@ -36,7 +36,7 @@ php bin/report2email.php   # Scheduled email reports
 
 ## Build & CI
 
-GitHub Actions workflow (`.github/workflows/build.yml`) triggers on push to `master`/`develop` and uses the shared `mikopbx/.github-workflows` reusable workflow for building and publishing releases. Version is auto-incremented from initial version `1.33`.
+Releases are built manually: run `composer install --no-dev` in a checkout, then pack the tree (with `vendor/`, without `.git`) into a zip whose root holds `module.json`. The version is set in `module.json`.
 
 ## Architecture
 
@@ -77,7 +77,7 @@ Asterisk CDR DB → ConnectorDB worker → SQLite (db/cdr.db)
 
 ### Database
 
-- **Module settings**: MikoPBX main DB (table `m_ModuleExtendedCDRs`)
+- **Module settings**: Dzvin PBX main DB (table `m_ModuleExtendedCDRs`)
 - **CDR data**: SQLite at `db/cdr.db` (managed by `CdrDbProvider`)
 
 ### Models
@@ -100,7 +100,7 @@ Base path: `/pbxcore/api/modules/ModuleExtendedCDRs/`
 
 ### Integration Points
 
-- **MikoPBX Core**: AMI, Beanstalk queues, CDR database, module lifecycle hooks
+- **Dzvin PBX Core**: AMI, Beanstalk queues, CDR database, module lifecycle hooks
 - **Other Modules**: ModuleUsersUI (RBAC/ACL), ModuleUsersGroups (group filtering)
 - **External**: Webhooks to arbitrary URLs via `ExportRules`
 
@@ -110,22 +110,12 @@ Source files are in `public/assets/js/src/`. After modifying them, compiled file
 
 **IMPORTANT:** Only edit files in `src/` directory. Files in `public/assets/js/*.js` are auto-generated.
 
-Build process uses Babel via PHPStorm File Watcher:
-- See setup: https://docs.mikopbx.com/mikopbx-development/prepare-ide-tools/mac#phpstorm-setup-babel
-- Babel path: `/Users/apor/Developement/MikoPBX/MikoPBXUtils/node_modules/.bin/babel`
-- Presets: `airbnb`
-- Source maps: enabled
+Compiled files are generated with Babel (preset `@babel/preset-env`, source maps enabled).
 
-To rebuild manually:
+To rebuild manually, from a directory with `@babel/cli` and `@babel/preset-env` installed:
+
 ```bash
-cd /Users/apor/Developement/MikoPBX/MikoPBXUtils && \
-cp babel.config.json babel.config.json.bak && \
-echo '{"presets":[["@babel/preset-env",{"targets":{"chrome":50,"ie":11,"firefox":45}}]]}' > babel.config.json && \
-./node_modules/.bin/babel \
-  /Volumes/DevDisk/apor/Developement/MikoPBX/Extensions/ModuleExtendedCDRs/public/assets/js/src/module-export-records-index.js \
-  --out-dir /Volumes/DevDisk/apor/Developement/MikoPBX/Extensions/ModuleExtendedCDRs/public/assets/js/ \
-  --source-maps && \
-mv babel.config.json.bak babel.config.json
+./node_modules/.bin/babel public/assets/js/src/module-export-records-index.js \n  --out-dir public/assets/js/ --source-maps
 ```
 
 ## Conventions

@@ -6,16 +6,16 @@
  * Written by Alexey Portnov, 11 2018
  */
 namespace Modules\ModuleExtendedCDRs\App\Controllers;
-use MikoPBX\AdminCabinet\Controllers\BaseController;
-use MikoPBX\AdminCabinet\Controllers\SessionController;
-use MikoPBX\Common\Models\CallQueues;
-use MikoPBX\Common\Models\Extensions;
-use MikoPBX\Common\Models\Sip;
-use MikoPBX\Common\Providers\PBXConfModulesProvider;
-use MikoPBX\Common\Providers\SessionProvider;
-use MikoPBX\Core\System\Util;
-use MikoPBX\Modules\Config\CDRConfigInterface;
-use MikoPBX\Modules\PbxExtensionUtils;
+use DzvinPBX\AdminCabinet\Controllers\BaseController;
+use DzvinPBX\AdminCabinet\Controllers\SessionController;
+use DzvinPBX\Common\Models\CallQueues;
+use DzvinPBX\Common\Models\Extensions;
+use DzvinPBX\Common\Models\Sip;
+use DzvinPBX\Common\Providers\PBXConfModulesProvider;
+use DzvinPBX\Common\Providers\SessionProvider;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\Modules\Config\CDRConfigInterface;
+use DzvinPBX\Modules\PbxExtensionUtils;
 use Modules\ModuleExtendedCDRs\App\Forms\ModuleExtendedCDRsForm;
 use Modules\ModuleExtendedCDRs\bin\ConnectorDB;
 use Modules\ModuleExtendedCDRs\Lib\CacheManager;
@@ -25,7 +25,7 @@ use Modules\ModuleExtendedCDRs\Lib\RestAPI\Controllers\ApiController;
 use Modules\ModuleExtendedCDRs\Models\CallHistory;
 use Modules\ModuleExtendedCDRs\Models\ExportRules;
 use Modules\ModuleExtendedCDRs\Models\ModuleExtendedCDRs;
-use MikoPBX\Common\Models\Providers;
+use DzvinPBX\Common\Models\Providers;
 use Modules\ModuleExtendedCDRs\Models\ReportSettings;
 use Modules\ModuleUsersGroups\Models\GroupMembers;
 use Modules\ModuleUsersGroups\Models\UsersGroups;

@@ -12,7 +12,7 @@
  */
 
 namespace Modules\ModuleExtendedCDRs\Models;
-use MikoPBX\Modules\Models\ModulesModelsBase;
+use DzvinPBX\Modules\Models\ModulesModelsBase;
 
 class ModuleExtendedCDRs extends ModulesModelsBase
 {

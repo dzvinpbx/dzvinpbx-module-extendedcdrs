@@ -8,7 +8,7 @@
 const idUrl     = 'module-extended-c-d-rs';
 const idForm    = 'module-extended-cdr-form';
 const className = 'ModuleExtendedCDRs';
-const inputClassName = 'mikopbx-module-input';
+const inputClassName = 'dzvinpbx-module-input';
 let listenedIDs = [];
 
 /* global globalRootUrl, globalTranslate, Form, Config, $ */
@@ -1404,7 +1404,7 @@ const ModuleExtendedCDRs = {
 
 	/**
 	 * Downloads a protected PBXCore response with the current access token.
-	 * Session credentials remain enabled for MikoPBX versions predating JWT authentication.
+	 * Session credentials remain enabled for DzvinPBX versions predating JWT authentication.
 	 *
 	 * @param {string} url
 	 * @param {string} fallbackFilename

@@ -22,4 +22,4 @@ Table SQL definitions, minimum/maximum IDs and SHA-256 hashes of the first/last 
 
 The live schema already contained all expected columns. Actual missing trailing column/index addition was tested separately in isolated in-memory databases using the installed Core and model classes: fresh creation, append, preserved row/rootpage, retry and Core no-op passed. No columns were removed from the live database for testing.
 
-Server evidence and scripts: `/storage/usbdisk1/mikopbx/tmp/cdr-upgrade-deploy/`, including `before.json`, `after-first.json`, `after-repeat.json`, `install-first.log`, `install-repeat.log`, and `schema-integration.log`.
+Server evidence and scripts: `/storage/usbdisk1/dzvinpbx/tmp/cdr-upgrade-deploy/`, including `before.json`, `after-first.json`, `after-repeat.json`, `install-first.log`, `install-repeat.log`, and `schema-integration.log`.

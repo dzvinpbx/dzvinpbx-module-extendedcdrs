@@ -1,12 +1,12 @@
 <?php
-namespace MikoPBX\PBXCoreREST\Controllers\Modules {
+namespace DzvinPBX\PBXCoreREST\Controllers\Modules {
     class ModulesControllerBase {public $request;public $response;public $error;public function sendError($code){$this->error=$code;}}
 }
 namespace Modules\ModuleExtendedCDRs\Lib {
-    class MikoPBXVersion {
+    class DzvinPBXVersion {
         public static $root;
         public static function getDefaultDi(){return new class {
-            public function getShared($name){return new class {public function path($key){return MikoPBXVersion::$root;}};}
+            public function getShared($name){return new class {public function path($key){return DzvinPBXVersion::$root;}};}
         };}
     }
 }
@@ -14,7 +14,7 @@ namespace {
     foreach(['RecordingArchiveJobs','RecordingArchiveService','DownloadHeaderPolicy']as$class)require dirname(__DIR__).'/Lib/'.$class.'.php';
     require dirname(__DIR__).'/Lib/RestAPI/Controllers/ApiController.php';
     $root=sys_get_temp_dir().'/archive-transfer-'.bin2hex(random_bytes(6));
-    \Modules\ModuleExtendedCDRs\Lib\MikoPBXVersion::$root=$root;
+    \Modules\ModuleExtendedCDRs\Lib\DzvinPBXVersion::$root=$root;
     $jobs=\Modules\ModuleExtendedCDRs\Lib\RecordingArchiveService::jobs();
     $job=$jobs->request('owner',[],'revision',static function(){});
     $jobs->run($job['id'],static function($input,$progress,$target){file_put_contents($target,'native transfer');return [];});

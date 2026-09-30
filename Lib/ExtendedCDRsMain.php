@@ -3,11 +3,11 @@
 namespace Modules\ModuleExtendedCDRs\Lib;
 
 
-use MikoPBX\Core\System\Processes;
-use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
-use MikoPBX\Modules\PbxExtensionBase;
-use MikoPBX\Modules\PbxExtensionUtils;
-use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
+use DzvinPBX\Core\System\Processes;
+use DzvinPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
+use DzvinPBX\Modules\PbxExtensionBase;
+use DzvinPBX\Modules\PbxExtensionUtils;
+use DzvinPBX\PBXCoreREST\Lib\PBXApiResult;
 
 class ExtendedCDRsMain extends PbxExtensionBase
 {

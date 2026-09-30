@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2025 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,10 +17,10 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-use MikoPBX\Core\System\Util;
-use MikoPBX\Core\System\Processes;
-use MikoPBX\Core\System\SystemMessages;
-use MikoPBX\Modules\PbxExtensionUtils;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\Core\System\Processes;
+use DzvinPBX\Core\System\SystemMessages;
+use DzvinPBX\Modules\PbxExtensionUtils;
 use Modules\ModuleExtendedCDRs\Lib\ExtendedCDRsConf;
 use Modules\ModuleExtendedCDRs\Lib\WorkerRuntimePolicy;
 use Modules\ModuleExtendedCDRs\Lib\WorkerLogRateLimiter;

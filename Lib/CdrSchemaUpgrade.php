@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\ModuleExtendedCDRs\Lib;
 
-use MikoPBX\Common\Providers\ModelsMetadataProvider;
-use MikoPBX\Core\System\Upgrade\UpdateDatabase;
+use DzvinPBX\Common\Providers\ModelsMetadataProvider;
+use DzvinPBX\Core\System\Upgrade\UpdateDatabase;
 use Modules\ModuleExtendedCDRs\Lib\Providers\CdrDbProvider;
 use Phalcon\Db\Adapter\Pdo\Sqlite;
 use Phalcon\Events\Manager;
@@ -17,7 +17,7 @@ final class CdrSchemaUpgrade
 {
     public function upgrade(array $models): void
     {
-        $di = MikoPBXVersion::getDefaultDi();
+        $di = DzvinPBXVersion::getDefaultDi();
         $actual = $di->getShared(CdrDbProvider::SERVICE_NAME);
         $canonical = new Sqlite(['dbname' => ':memory:']);
         $di->remove(CdrDbProvider::SERVICE_NAME);

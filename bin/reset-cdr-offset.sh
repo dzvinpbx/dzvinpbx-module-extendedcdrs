@@ -7,8 +7,8 @@
 DATE="${1:-$(date '+%Y-%m-%d')}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-CDR_DB="/storage/usbdisk1/mikopbx/astlogs/asterisk/cdr.db"
-MODULE_DB="/storage/usbdisk1/mikopbx/custom_modules/ModuleExtendedCDRs/db/module.db"
+CDR_DB="/storage/usbdisk1/dzvinpbx/astlogs/asterisk/cdr.db"
+MODULE_DB="/storage/usbdisk1/dzvinpbx/custom_modules/ModuleExtendedCDRs/db/module.db"
 
 # Находим минимальный id на указанную дату
 MIN_ID=$(sqlite3 -noheader -csv "$CDR_DB" "SELECT MIN(id) FROM cdr_general WHERE start >= '${DATE}';")

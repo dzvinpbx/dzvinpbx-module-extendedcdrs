@@ -9,9 +9,9 @@
 
 namespace Modules\ModuleExtendedCDRs\Lib\RestAPI\Controllers;
 
-use MikoPBX\Core\System\Directories;
-use MikoPBX\Core\System\Util;
-use MikoPBX\PBXCoreREST\Controllers\Modules\ModulesControllerBase;
+use DzvinPBX\Core\System\Directories;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\PBXCoreREST\Controllers\Modules\ModulesControllerBase;
 use Modules\ModuleExtendedCDRs\bin\ConnectorDB;
 use Modules\ModuleExtendedCDRs\Lib\DownloadHeaderPolicy;
 use Modules\ModuleExtendedCDRs\Lib\GetReport;
@@ -40,7 +40,7 @@ class ApiController extends ModulesControllerBase
 
     /**
      * Скачивание записи разговора.
-     * /pbxcore/api/cdr/records MIKO AJAM
+     * /pbxcore/api/cdr/records DZVIN AJAM
      * Prefer CallRecordID. The legacy view parameter remains supported only
      * for paths validated inside the configured recordings directory.
      */
@@ -284,8 +284,8 @@ class ApiController extends ModulesControllerBase
             $context=['auth_type'=>'bearer_token','user_name'=>$jwt['userId']??null,
                 'session_id'=>$jwt['userId']??null,'role'=>$jwt['role']??null];
         }
-        \MikoPBX\Common\Providers\PBXConfModulesProvider::hookModulesMethod(
-            \MikoPBX\Modules\Config\CDRConfigInterface::APPLY_ACL_FILTERS_TO_CDR_QUERY,[&$acl,$context]);
+        \DzvinPBX\Common\Providers\PBXConfModulesProvider::hookModulesMethod(
+            \DzvinPBX\Modules\Config\CDRConfigInterface::APPLY_ACL_FILTERS_TO_CDR_QUERY,[&$acl,$context]);
         return ['conditions'=>$acl['conditions'],'bind'=>$acl['bind']??[]];
     }
 

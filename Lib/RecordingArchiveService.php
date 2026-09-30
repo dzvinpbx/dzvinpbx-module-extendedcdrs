@@ -3,9 +3,9 @@
 declare(strict_types=1);
 namespace Modules\ModuleExtendedCDRs\Lib;
 
-use MikoPBX\Core\System\Directories;
-use MikoPBX\Core\System\Util;
-use MikoPBX\Core\System\Processes;
+use DzvinPBX\Core\System\Directories;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\Core\System\Processes;
 use RuntimeException;
 
 /** PBX-specific selection and process integration around the testable job/cache store. */
@@ -13,7 +13,7 @@ final class RecordingArchiveService
 {
     public static function root(): string
     {
-        return MikoPBXVersion::getDefaultDi()->getShared('config')->path('core.tempDir').'/ModuleExtendedCDRsArchiveJobs';
+        return DzvinPBXVersion::getDefaultDi()->getShared('config')->path('core.tempDir').'/ModuleExtendedCDRsArchiveJobs';
     }
     public static function jobs(): RecordingArchiveJobs { return new RecordingArchiveJobs(self::root()); }
 

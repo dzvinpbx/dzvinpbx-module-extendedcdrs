@@ -1,7 +1,7 @@
 <?php
 
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2024 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,9 +19,9 @@
  */
 namespace Modules\ModuleExtendedCDRs\Lib;
 
-use MikoPBX\Common\Models\PbxSettings;
+use DzvinPBX\Common\Models\PbxSettings;
 
-class MikoPBXVersion
+class DzvinPBXVersion
 {
     /**
      * Return true if current version of PBX based on Phalcon 5+
@@ -74,12 +74,12 @@ class MikoPBXVersion
     /**
      * Return Text class for the current version of PBX
      *
-     * @return class-string<\MikoPBX\Common\Library\Text>|class-string<\Phalcon\Text>
+     * @return class-string<\DzvinPBX\Common\Library\Text>|class-string<\Phalcon\Text>
      */
     public static function getTextClass(): string
     {
         if (self::isPhalcon5Version()) {
-            return   \MikoPBX\Common\Library\Text::class;
+            return   \DzvinPBX\Common\Library\Text::class;
         } else {
             return  \Phalcon\Text::class;
         }

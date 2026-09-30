@@ -8,15 +8,15 @@
 
 namespace Modules\ModuleExtendedCDRs\Models;
 
-use MikoPBX\Common\Models\ModelsBase;
-use Modules\ModuleExtendedCDRs\Lib\MikoPBXVersion;
+use DzvinPBX\Common\Models\ModelsBase;
+use Modules\ModuleExtendedCDRs\Lib\DzvinPBXVersion;
 use Modules\ModuleExtendedCDRs\Lib\Providers\CdrDbProvider;
 
 /**
  * Class OversizedLinkedIds
  *
  * Служебный список "раздутых" linkedid — звонков, у которых число CDR-строк
- * достигает потолка выборки ядра (MikoPBX SelectCDR MAX_QUERY_LIMIT = 5000).
+ * достигает потолка выборки ядра (DzvinPBX SelectCDR MAX_QUERY_LIMIT = 5000).
  * Обычно это зависшие каналы (конференции, парковки, MOH, подвисший local-канал),
  * которые бесконечно генерируют строки под одним linkedid и блокируют продвижение
  * offset синхронизации. Такие linkedid исключаются из запроса истории: их первые
@@ -85,7 +85,7 @@ class OversizedLinkedIds extends ModelsBase
      */
     public static function ensureTableExists(): void
     {
-        $di = MikoPBXVersion::getDefaultDi();
+        $di = DzvinPBXVersion::getDefaultDi();
         if ($di === null) {
             return;
         }

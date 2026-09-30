@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,10 +19,10 @@
 
 namespace Modules\ModuleExtendedCDRs\bin;
 
-use MikoPBX\Common\Models\CallQueues;
-use MikoPBX\Core\System\Util;
-use MikoPBX\Core\Workers\WorkerBase;
-use MikoPBX\Core\System\BeanstalkClient;
+use DzvinPBX\Common\Models\CallQueues;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\Core\Workers\WorkerBase;
+use DzvinPBX\Core\System\BeanstalkClient;
 use Modules\ModuleExtendedCDRs\Lib\CacheManager;
 use Modules\ModuleExtendedCDRs\Lib\HistoryParser;
 use Modules\ModuleExtendedCDRs\Lib\Logger;
@@ -42,7 +42,7 @@ use Modules\ModuleExtendedCDRs\Lib\WorkerFailureContext;
 use Modules\ModuleExtendedCDRs\Lib\WorkerProcessMetrics;
 use Modules\ModuleExtendedCDRs\Lib\WorkerRuntimePolicy;
 use Exception;
-use Modules\ModuleExtendedCDRs\Lib\MikoPBXVersion;
+use Modules\ModuleExtendedCDRs\Lib\DzvinPBXVersion;
 use Modules\ModuleExtendedCDRs\Lib\Providers\CdrDbProvider;
 use Modules\ModuleExtendedCDRs\Models\CallHistory;
 use Modules\ModuleExtendedCDRs\Models\CallQueuesHistory;
@@ -299,7 +299,7 @@ class ConnectorDB extends WorkerBase
         }
         $downloadCacheDir = '';
         $tmpDir           = '/tmp/';
-        $di = MikoPBXVersion::getDefaultDi();
+        $di = DzvinPBXVersion::getDefaultDi();
         if ($di) {
             $dirsConfig = $di->getShared('config');
             $tmpDirName = $dirsConfig->path('core.tempDir') . '/ModuleExtendedCDRs';

@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 
 namespace Modules\ModuleExtendedCDRs\Lib;
 
-use MikoPBX\Core\System\Util;
+use DzvinPBX\Core\System\Util;
 use Modules\ModuleExtendedCDRs\Models\CallHistory;
 
 class Mp3TagService
@@ -46,7 +46,7 @@ class Mp3TagService
             $this->lnPath = Util::which('ln');
         }
         if (empty($this->coverImageData)) {
-            $coverImage = $this->moduleDir . '/public/assets/img/mikopbx-picture.jpg';
+            $coverImage = $this->moduleDir . '/public/assets/img/dzvinpbx-picture.jpg';
             $coverImageCustom = dirname($this->moduleDir) . '/ModuleExtendedCDRs-logo-mp3.jpg';
             if (file_exists($coverImageCustom)) {
                 $coverImage = $coverImageCustom;
@@ -69,7 +69,7 @@ class Mp3TagService
         $this->initPaths();
 
         $formattedDate  = date('Y-m-d-H_i', strtotime($data->start));
-        $uid            = str_replace('mikopbx-', '', $data->linkedid);
+        $uid            = str_replace('dzvinpbx-', '', $data->linkedid);
         $prettyFilename = "$uid-$formattedDate-$data->src_num-$data->dst_num";
 
         $ext = strtolower(pathinfo($data->recordingfile, PATHINFO_EXTENSION));
@@ -110,7 +110,7 @@ class Mp3TagService
                 [
                     'data' => $this->coverImageData,
                     'picturetypeid' => 0x03,
-                    'description' => 'MikoPBX',
+                    'description' => 'DzvinPBX',
                     'mime' => 'image/jpeg'
                 ]
             ],

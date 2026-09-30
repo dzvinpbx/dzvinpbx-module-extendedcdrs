@@ -1,11 +1,11 @@
 <?php
-namespace MikoPBX\Core\System {class Directories {const AST_MONITOR_DIR='monitor';public static $root;public static function getDir($name){return self::$root;}}}
+namespace DzvinPBX\Core\System {class Directories {const AST_MONITOR_DIR='monitor';public static $root;public static function getDir($name){return self::$root;}}}
 namespace Modules\ModuleExtendedCDRs\Lib {
     class GetReport {
         public function __construct($acl){if($acl['bind']['employee']!=='204')throw new \RuntimeException('ACL missing');}
         public function history($search,$offset,$limit,$stats){
             if($limit!==5001||$stats!==false)throw new \RuntimeException('Unbounded/expensive archive selection');
-            $root=\MikoPBX\Core\System\Directories::$root;
+            $root=\DzvinPBX\Core\System\Directories::$root;
             return (object)['data'=>[['4'=>[
                 ['recordingfile'=>$root.'/204.wav','prettyFilename'=>'204'],
                 ['recordingfile'=>$root.'/204.wav','prettyFilename'=>'204 duplicate'],
@@ -17,7 +17,7 @@ namespace Modules\ModuleExtendedCDRs\Lib {
 namespace {
     foreach(['RecordingPathResult','RecordingPathPolicy','RecordingArchiveResult','RecordingArchiveBuilder','RecordingArchiveJobs','RecordingArchiveService'] as $class)require dirname(__DIR__).'/Lib/'.$class.'.php';
     $root=sys_get_temp_dir().'/archive-service-'.bin2hex(random_bytes(6));mkdir($root.'/monitor',0700,true);
-    \MikoPBX\Core\System\Directories::$root=$root.'/monitor';
+    \DzvinPBX\Core\System\Directories::$root=$root.'/monitor';
     file_put_contents($root.'/monitor/204.wav','recording 204');file_put_contents($root.'/outside.wav','not allowed');
     $jobs=new \Modules\ModuleExtendedCDRs\Lib\RecordingArchiveJobs($root.'/jobs');
     $job=$jobs->request('alice',['search'=>'{}','acl'=>['bind'=>['employee'=>'204']]],'revision',static function(){});

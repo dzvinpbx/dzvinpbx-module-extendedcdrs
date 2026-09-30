@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,8 @@
 
 namespace Modules\ModuleExtendedCDRs\Lib;
 
-use MikoPBX\Common\Providers\ConfigProvider;
-use MikoPBX\Core\System\Util;
+use DzvinPBX\Common\Providers\ConfigProvider;
+use DzvinPBX\Core\System\Util;
 use Phalcon\Cache\Adapter\Redis;
 use Phalcon\Storage\SerializerFactory;
 
@@ -35,7 +35,7 @@ class CacheManager
     public static function cacheAdapter():Redis
     {
         $serializerFactory = new SerializerFactory();
-        $di     = MikoPBXVersion::getDefaultDi();
+        $di     = DzvinPBXVersion::getDefaultDi();
         $options = [
             'defaultSerializer' => 'Php',
             'lifetime'          => 86400,

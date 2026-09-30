@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2022 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@
  */
 
 namespace Modules\ModuleExtendedCDRs\Lib;
-use MikoPBX\Core\System\System;
-use MikoPBX\Core\System\Util;
+use DzvinPBX\Core\System\System;
+use DzvinPBX\Core\System\Util;
 use Phalcon\Logger\Adapter\Stream;
 use Cesargb\Log\Rotation;
 use Cesargb\Log\Exceptions\RotationFailed;
@@ -91,11 +91,11 @@ class Logger
     {
         $adapter       = new Stream($this->logFile);
         $lineFormatter = new LineFormatter(
-            LogFormatPolicy::template(MikoPBXVersion::isPhalcon5Version()),
+            LogFormatPolicy::template(DzvinPBXVersion::isPhalcon5Version()),
             "Y-m-d H:i:s"
         );
         $adapter->setFormatter($lineFormatter);
-        $loggerClass = MikoPBXVersion::getLoggerClass();
+        $loggerClass = DzvinPBXVersion::getLoggerClass();
         $this->logger  = new $loggerClass(
             'messages',
             [

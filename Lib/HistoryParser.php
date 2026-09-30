@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,13 +19,13 @@
 
 namespace Modules\ModuleExtendedCDRs\Lib;
 
-use MikoPBX\Common\Models\CallQueues;
-use MikoPBX\Common\Models\Extensions;
-use MikoPBX\Common\Providers\CDRDatabaseProvider;
-use MikoPBX\Core\System\BeanstalkClient;
-use MikoPBX\Core\System\SystemMessages;
-use MikoPBX\Core\System\Util;
-use MikoPBX\Core\Workers\WorkerCdr;
+use DzvinPBX\Common\Models\CallQueues;
+use DzvinPBX\Common\Models\Extensions;
+use DzvinPBX\Common\Providers\CDRDatabaseProvider;
+use DzvinPBX\Core\System\BeanstalkClient;
+use DzvinPBX\Core\System\SystemMessages;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\Core\Workers\WorkerCdr;
 use Modules\ModuleExtendedCDRs\bin\ConnectorDB;
 use Modules\ModuleExtendedCDRs\Models\CallHistory;
 
@@ -35,7 +35,7 @@ class HistoryParser
 
     /**
      * Потолок числа строк на один linkedid.
-     * ВАЖНО: должен совпадать с MikoPBX\...\WorkerCallEvents\SelectCDR::MAX_QUERY_LIMIT (5000).
+     * ВАЖНО: должен совпадать с DzvinPBX\...\WorkerCallEvents\SelectCDR::MAX_QUERY_LIMIT (5000).
      * Если ядро изменит лимит выборки — синхронизировать это значение.
      * linkedid, достигший этого числа строк, считается "раздутым" (зависший канал)
      * и исключается из синхронизации, см. Models\OversizedLinkedIds.
@@ -54,11 +54,11 @@ class HistoryParser
         if (empty($filter)) {
             $filter = [
                 'work_completed<>1 AND endtime<>""',
-                'miko_tmp_db' => true,
+                'dzvin_tmp_db' => true,
                 'limit' => 2000
             ];
         }
-        $filter['miko_result_in_file'] = true;
+        $filter['dzvin_result_in_file'] = true;
         if(!isset($filter['order'])){
             $filter['order'] = 'answer';
         }
@@ -87,7 +87,7 @@ class HistoryParser
                 SystemMessages::sysLogMsg('HistoryParser:SELECT_CDR_TUBE', 'Error parse response.');
             }
 
-            $di = MikoPBXVersion::getDefaultDi();
+            $di = DzvinPBXVersion::getDefaultDi();
             if($di !== null){
                 $findPath = Util::which('find');
                 $downloadCacheDir = $di->getShared('config')->path('www.downloadCacheDir');
@@ -104,14 +104,14 @@ class HistoryParser
 
     public static function getQueues():array
     {
-        $queues = CacheManager::getCacheData('ModuleMtsPbx');
+        $queues = CacheManager::getCacheData('ModuleExtendedCDRs_queues');
         if(empty($queues)){
             $queues = [];
             $queuesData = CallQueues::find(['columns' => 'uniqid,name,extension']);
             foreach ($queuesData as $queue) {
                 $queues[$queue->extension] = $queue->uniqid;
             }
-            CacheManager::setCacheData('ModuleMtsPbx', $queues, 120);
+            CacheManager::setCacheData('ModuleExtendedCDRs_queues', $queues, 120);
         }
         return $queues;
     }

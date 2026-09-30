@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2024 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,11 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-use MikoPBX\Core\System\SystemMessages;
+use DzvinPBX\Core\System\SystemMessages;
 use Modules\ModuleExtendedCDRs\Lib\GetReport;
 use Modules\ModuleExtendedCDRs\Models\ReportSettings;
-use MikoPBX\Core\System\Notifications;
-use MikoPBX\Core\System\Util;
+use DzvinPBX\Core\System\Notifications;
+use DzvinPBX\Core\System\Util;
 require_once('Globals.php');
 
 $id = $argv[1]??null;

@@ -24,7 +24,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 var idUrl = 'module-extended-c-d-rs';
 var idForm = 'module-extended-cdr-form';
 var className = 'ModuleExtendedCDRs';
-var inputClassName = 'mikopbx-module-input';
+var inputClassName = 'dzvinpbx-module-input';
 var listenedIDs = [];
 
 /* global globalRootUrl, globalTranslate, Form, Config, $ */
@@ -1283,7 +1283,7 @@ var ModuleExtendedCDRs = {
   },
   /**
    * Downloads a protected PBXCore response with the current access token.
-   * Session credentials remain enabled for MikoPBX versions predating JWT authentication.
+   * Session credentials remain enabled for DzvinPBX versions predating JWT authentication.
    *
    * @param {string} url
    * @param {string} fallbackFilename

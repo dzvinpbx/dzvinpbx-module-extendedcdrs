@@ -1,6 +1,6 @@
 <?php
 /*
- * MikoPBX - free phone system for small business
+ * Dzvin PBX - free phone system for small business
  * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 namespace Modules\ModuleExtendedCDRs\bin;
 
 use GuzzleHttp\Exception\GuzzleException;
-use MikoPBX\Common\Models\Extensions;
-use MikoPBX\Core\System\Util;
-use MikoPBX\Core\Workers\WorkerBase;
-use MikoPBX\Core\System\BeanstalkClient;
-use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
+use DzvinPBX\Common\Models\Extensions;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\Core\Workers\WorkerBase;
+use DzvinPBX\Core\System\BeanstalkClient;
+use DzvinPBX\PBXCoreREST\Lib\PBXApiResult;
 use Modules\ModuleExtendedCDRs\Lib\HistoryParser;
 use Modules\ModuleExtendedCDRs\Lib\Logger;
 use Exception;

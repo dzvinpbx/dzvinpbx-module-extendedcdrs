@@ -12,13 +12,13 @@
  */
 
 namespace Modules\ModuleExtendedCDRs\Models;
-use MikoPBX\Common\Models\ModelsBase;
+use DzvinPBX\Common\Models\ModelsBase;
 use Modules\ModuleExtendedCDRs\Lib\Providers\CdrDbProvider;
 
 /**
  * Class CallDetailRecords
  *
- * @package MikoPBX\Common\Models
+ * @package DzvinPBX\Common\Models
  *
  * @Indexes(
  *     [name='date', columns=['date'], type=''],

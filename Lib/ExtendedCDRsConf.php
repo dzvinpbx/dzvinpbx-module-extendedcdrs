@@ -9,11 +9,11 @@
 
 namespace Modules\ModuleExtendedCDRs\Lib;
 
-use MikoPBX\Core\System\Configs\CronConf;
-use MikoPBX\Core\System\Util;
-use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
-use MikoPBX\Modules\Config\ConfigClass;
-use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
+use DzvinPBX\Core\System\Configs\CronConf;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
+use DzvinPBX\Modules\Config\ConfigClass;
+use DzvinPBX\PBXCoreREST\Lib\PBXApiResult;
 use Modules\ModuleExtendedCDRs\bin\ConnectorDB;
 use Modules\ModuleExtendedCDRs\Lib\ModuleWatchdogCommand;
 use Modules\ModuleExtendedCDRs\Lib\RestAPI\Controllers\ApiController;
@@ -53,7 +53,7 @@ class ExtendedCDRsConf extends ConfigClass
     }
 
     /**
-     * Receive information about mikopbx main database changes
+     * Receive information about dzvinpbx main database changes
      *
      * @param $data
      */
@@ -135,7 +135,7 @@ class ExtendedCDRsConf extends ConfigClass
     public function createCronTasks(array &$tasks): void
     {
         $busyboxPath= Util::which('busybox');
-        $tasks[]    = "*/1 * * * * $busyboxPath find /storage/usbdisk*/mikopbx/tmp/ModuleExtendedCDRs/ -mmin +5 -type f -delete> /dev/null 2>&1".PHP_EOL;
+        $tasks[]    = "*/1 * * * * $busyboxPath find /storage/usbdisk*/dzvinpbx/tmp/ModuleExtendedCDRs/ -mmin +5 -type f -delete> /dev/null 2>&1".PHP_EOL;
         $phpPath    = Util::which('php');
         $tasks[] = '*/5 * * * * '.escapeshellarg($phpPath).' '.escapeshellarg($this->moduleDir.'/bin/recording-archive.php').' cleanup > /dev/null 2>&1'.PHP_EOL;
         $watchdogCommand = ModuleWatchdogCommand::build(

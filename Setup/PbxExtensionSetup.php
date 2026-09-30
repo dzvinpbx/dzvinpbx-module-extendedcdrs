@@ -8,11 +8,11 @@
 
 namespace Modules\ModuleExtendedCDRs\Setup;
 
-use MikoPBX\Modules\Setup\PbxExtensionSetupBase;
-use MikoPBX\Common\Providers\ModulesDBConnectionsProvider;
-use MikoPBX\Core\System\Upgrade\UpdateDatabase;
-use MikoPBX\Core\System\Util;
-use MikoPBX\Modules\Models\ModulesModelsBase;
+use DzvinPBX\Modules\Setup\PbxExtensionSetupBase;
+use DzvinPBX\Common\Providers\ModulesDBConnectionsProvider;
+use DzvinPBX\Core\System\Upgrade\UpdateDatabase;
+use DzvinPBX\Core\System\Util;
+use DzvinPBX\Modules\Models\ModulesModelsBase;
 use Modules\ModuleExtendedCDRs\Lib\DatabaseUpgradeStorage;
 use Modules\ModuleExtendedCDRs\Lib\CdrSchemaUpgrade;
 use Modules\ModuleExtendedCDRs\Lib\Providers\CdrDbProvider;
