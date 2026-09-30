@@ -1,0 +1,114 @@
+<?php
+
+namespace Modules\ModuleExtendedCDRs\Lib;
+
+final class TrunkResolver
+{
+    /** @var array<string,array{name:string,id:string,host:string}> */
+    private array $byId = [];
+    /** @var array<string,int> */
+    private array $hostProviderCount = [];
+    /** @var array<string,array<string,array<int,array{name:string,id:string,host:string}>>> */
+    private array $byHostAndUsername = [];
+
+    public function __construct(iterable $providers, iterable $routes = [])
+    {
+        foreach ($providers as $provider) {
+            $provider = (array)$provider;
+            $id = (string)($provider['uniqid'] ?? '');
+            $name = (string)($provider['description'] ?? '');
+            if ($id === '' || $name === '') {
+                continue;
+            }
+            $host = self::normalizeHost((string)($provider['host'] ?? ''));
+            $candidate = ['name' => $name, 'id' => $id, 'host' => $host];
+            $this->byId[$id] = $candidate;
+            if ($host === '') {
+                continue;
+            }
+            $this->hostProviderCount[$host] = ($this->hostProviderCount[$host] ?? 0) + 1;
+            $username = self::normalizeNumber((string)($provider['username'] ?? ''));
+            if ($username !== '') {
+                $this->addUsernameCandidate($host, $username, $candidate);
+            }
+        }
+
+        // Incoming-route DIDs extend the pool of "logins" for their provider. This covers
+        // IP-authorized providers whose SIP account carries no username, yet whose inbound
+        // legs still differ by DID (mapped to a provider in the PBX incoming routing table).
+        foreach ($routes as $route) {
+            $route = (array)$route;
+            $providerId = (string)($route['provider'] ?? '');
+            if ($providerId === '' || !isset($this->byId[$providerId])) {
+                continue;
+            }
+            $candidate = $this->byId[$providerId];
+            $host = $candidate['host'];
+            if ($host === '') {
+                continue;
+            }
+            $number = self::normalizeNumber((string)($route['number'] ?? ''));
+            if ($number !== '') {
+                $this->addUsernameCandidate($host, $number, $candidate);
+            }
+        }
+    }
+
+    /** @return array{name:string,id:string,status:string,source:string,candidates:array} */
+    public function resolve(array $record, string $callType): array
+    {
+        $technical = (string)($record['line'] ?? '');
+        if (isset($this->byId[$technical])) {
+            $lineProvider = $this->byId[$technical];
+            $host = $lineProvider['host'];
+            $isIncoming = in_array($callType, ['incoming', '2', '3'], true);
+            if ($isIncoming && $host !== '' && ($this->hostProviderCount[$host] ?? 0) > 1) {
+                $did = self::normalizeNumber((string)($record['did'] ?? ''));
+                $candidates = $did === '' ? [] : ($this->byHostAndUsername[$host][$did] ?? []);
+                if (count($candidates) === 1) {
+                    return $this->resolved($candidates[0], 'did_username');
+                }
+            }
+            return $this->resolved($lineProvider, 'line_id');
+        }
+
+        return [
+            'name' => $technical,
+            'id' => $technical,
+            'status' => 'unresolved',
+            'source' => 'technical',
+            'candidates' => [],
+        ];
+    }
+
+    private function addUsernameCandidate(string $host, string $key, array $candidate): void
+    {
+        foreach ($this->byHostAndUsername[$host][$key] ?? [] as $existing) {
+            if ($existing['id'] === $candidate['id']) {
+                return;
+            }
+        }
+        $this->byHostAndUsername[$host][$key][] = $candidate;
+    }
+
+    private function resolved(array $candidate, string $source): array
+    {
+        return [
+            'name' => $candidate['name'],
+            'id' => $candidate['id'],
+            'status' => 'resolved',
+            'source' => $source,
+            'candidates' => [],
+        ];
+    }
+
+    private static function normalizeNumber(string $number): string
+    {
+        return preg_replace('/\D+/', '', $number) ?: '';
+    }
+
+    private static function normalizeHost(string $host): string
+    {
+        return strtolower(trim($host));
+    }
+}
