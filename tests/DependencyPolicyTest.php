@@ -34,4 +34,7 @@ assertDependencyPolicy(
     'FPDI must be at least 2.6.7; locked ' . $versions['setasign/fpdi']
 );
 
+assertDependencyPolicy(isset($versions['dompdf/dompdf']), 'dompdf must be locked');
+assertDependencyPolicy(!isset($versions['mpdf/mpdf']), 'mPDF (GPL-2.0-only) must not be used');
+
 echo "DependencyPolicyTest: OK\n";

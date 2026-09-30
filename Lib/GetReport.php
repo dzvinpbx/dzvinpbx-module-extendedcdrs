@@ -24,8 +24,8 @@ use DzvinPBX\Common\Models\IncomingRoutingTable;
 use DzvinPBX\Common\Providers\PBXConfModulesProvider;
 use DzvinPBX\Modules\Config\CDRConfigInterface;
 use Modules\ModuleUsersGroups\Models\GroupMembers;
-use Mpdf\Mpdf;
-use Mpdf\Output\Destination;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -85,10 +85,61 @@ class GetReport
         return $tmpDir;
     }
 
+    /**
+     * Shared CSS for all PDF reports. DejaVu Sans ships with dompdf and covers Cyrillic.
+     */
+    private const PDF_STYLE = '@page { margin: 16mm 15mm; } '
+        . 'body { font-family: "DejaVu Sans", sans-serif; font-size: 9pt; } '
+        . 'h2 { font-size: 15pt; margin: 0 0 6px 0; } h3 { font-size: 12pt; margin: 0 0 8px 0; } '
+        . 'table { border-collapse: collapse; width: 100%; } '
+        . 'th, td { border: 1px solid #000; } thead { display: table-header-group; }';
+
+    /**
+     * Renders the given HTML body into a PDF (A4 portrait) and returns its binary content.
+     */
+    private static function renderPdf(string $htmlBody, string $tmpDir): string
+    {
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('defaultPaperSize', 'a4');
+        $options->set('defaultPaperOrientation', 'portrait');
+        $options->set('isRemoteEnabled', false);
+        $options->set('isPhpEnabled', false);
+        $options->set('isFontSubsettingEnabled', true);
+        $options->set('tempDir', $tmpDir);
+        $options->set('fontCache', $tmpDir);
+        $options->set('chroot', [dirname(__DIR__), $tmpDir]);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml(
+            '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' . self::PDF_STYLE . '</style></head><body>'
+            . $htmlBody . '</body></html>',
+            'UTF-8'
+        );
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        return (string)$dompdf->output();
+    }
+
+    /**
+     * Saves the PDF into $filename or sends it to the client as a download.
+     */
+    private static function outputPdf(string $pdf, string $filename, string $downloadName, bool $saveInFile): void
+    {
+        if ($saveInFile === true) {
+            file_put_contents($filename, $pdf);
+            return;
+        }
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $downloadName . '"');
+        header('Content-Length: ' . strlen($pdf));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        echo $pdf;
+    }
+
     public static function exportHistoryQueuePdf($view, $saveInFile = false): string
     {
         $tmpDir = self::getTmpDir();
-        $mpdf = new Mpdf(['tempDir' => $tmpDir]);
         $html = '';
         if(!empty($view->title)){
             $html.= '<h2>' . $view->title . '</h2>';
@@ -122,13 +173,8 @@ class GetReport
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
-        $mpdf->WriteHTML($html);
         $filename = $tmpDir . '/history-queue-calls-' . time() . '.pdf';
-        if ($saveInFile === true) {
-            $mpdf->Output($filename, Destination::FILE);
-        } else {
-            $mpdf->Output('history-queue-calls.pdf', Destination::DOWNLOAD);
-        }
+        self::outputPdf(self::renderPdf($html, $tmpDir), $filename, 'history-queue-calls.pdf', $saveInFile);
         return $filename;
     }
 
@@ -615,21 +661,15 @@ class GetReport
     public static function exportHistoryPdf($view, $saveInFile = false): string
     {
         $tmpDir = self::getTmpDir();
-        // mPDF can consume a lot of RAM for large tables.
-        // 1) Don't build one huge HTML string
-        // 2) Split output into multiple small tables (repeat header) so mPDF can release table data sooner.
-        $mpdf = new Mpdf([
-            'tempDir' => $tmpDir,
-            'simpleTables' => true,
-            'packTableData' => true,
-        ]);
-
+        // dompdf lays out the whole document in memory, so keep the markup compact:
+        // split the rows into small tables (header repeated) separated by page breaks.
+        $html = '';
         if (!empty($view->title)) {
-            $mpdf->WriteHTML('<h2>' . htmlspecialchars((string)$view->title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h2>');
+            $html .= '<h2>' . htmlspecialchars((string)$view->title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h2>';
         }
         $search = json_decode((string)($view->searchPhrase ?? ''), true);
         $dateRangeSelector = $search['dateRangeSelector'] ?? '';
-        $mpdf->WriteHTML('<h3>' . htmlspecialchars((string)$dateRangeSelector, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h3>');
+        $html .= '<h3>' . htmlspecialchars((string)$dateRangeSelector, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h3>';
 
         $tableHeader = '<table border="1" cellpadding="4" cellspacing="0" style="width: 100%;">' .
             '<thead><tr>' .
@@ -668,7 +708,7 @@ class GetReport
 
                 $rowsInChunk++;
                 if ($rowsInChunk >= $flushEvery) {
-                    $mpdf->WriteHTML($tableHeader . $rowsChunk . $tableFooter . '<pagebreak />');
+                    $html .= $tableHeader . $rowsChunk . $tableFooter . '<div style="page-break-after: always;"></div>';
                     $rowsChunk = '';
                     $rowsInChunk = 0;
                 }
@@ -676,15 +716,10 @@ class GetReport
         }
 
         if ($rowsChunk !== '') {
-            $mpdf->WriteHTML($tableHeader . $rowsChunk . $tableFooter);
+            $html .= $tableHeader . $rowsChunk . $tableFooter;
         }
         $filename = $tmpDir . '/calls_report-' . time() . '.pdf';
-
-        if ($saveInFile === true) {
-            $mpdf->Output($tmpDir . '/calls_report-' . time() . '.pdf', Destination::FILE);
-        } else {
-            $mpdf->Output('calls_report.pdf', Destination::DOWNLOAD);
-        }
+        self::outputPdf(self::renderPdf($html, $tmpDir), $filename, 'calls_report.pdf', $saveInFile);
 
         return $filename;
     }
@@ -797,22 +832,20 @@ class GetReport
     public static function exportOutgoingEmployeeCallsPrintPdf($view, $saveInFile = false): string
     {
         $tmpDir = self::getTmpDir();
-        $mpdf = new Mpdf(['tempDir' => $tmpDir]);
         $html = '';
         if(!empty($view->title)){
             $html.= '<h2>' . $view->title . '</h2>';
         }
         $html.= '<h3>' . json_decode($view->searchPhrase, true)['dateRangeSelector'] . '</h3>';
         $html .= '<table border="1" cellpadding="10" cellspacing="0" style="width: 100%;">';
-        $html .= '<tr>';
-        $html .= '<thead>' . '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_callerId') . '</th>' .
+        $html .= '<thead><tr>' . '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_callerId') . '</th>' .
                     '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_number') . '</th>' .
                     '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_billHourCalls') . '</th>' .
                     '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_billMinCalls') . '</th>' .
                     '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_billSecCalls') . '</th>' .
                     '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_countCalls') .
                     '</th>' .
-                 '</thead>';
+                 '</tr></thead>';
         $html .= '<tbody>';
         foreach ($view->data as $index => $item) {
             $rowStyle = ($index % 2 == 1) ? 'background-color: #f0f0f0;' : '';
@@ -826,13 +859,8 @@ class GetReport
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
-        $mpdf->WriteHTML($html);
         $filename = $tmpDir . '/outgoing-employee-calls-' . time() . '.pdf';
-        if ($saveInFile === true) {
-            $mpdf->Output($filename, Destination::FILE);
-        } else {
-            $mpdf->Output('outgoing-employee-calls.pdf', Destination::DOWNLOAD);
-        }
+        self::outputPdf(self::renderPdf($html, $tmpDir), $filename, 'outgoing-employee-calls.pdf', $saveInFile);
         return $filename;
     }
 

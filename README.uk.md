@@ -42,6 +42,25 @@ composer install --no-dev
 
 Залежності встановлюються з `composer.json`; `vendor/` у репозиторії не зберігається.
 
+## Сторонні бібліотеки
+
+PDF-звіти формуються бібліотекою [dompdf](https://github.com/dompdf/dompdf) зі шрифтом DejaVu Sans
+з її складу (Unicode, підтримує кирилицю). Раніше використовувалась mPDF, яка має ліцензію
+GPL-2.0-only і несумісна з GPL-3.0-or-later цього модуля; її більше не застосовують. Усі вбудовані
+бібліотеки мають GPL-3.0-сумісні ліцензії (LGPL-бібліотеки можна поєднувати з кодом GPL-3.0):
+
+| Пакет | Призначення | Ліцензія |
+|---|---|---|
+| `dompdf/dompdf` 3.1.6 | PDF-звіти (замість mPDF) | LGPL-2.1 |
+| `dompdf/php-font-lib` 1.0.2 | dompdf: шрифти | LGPL-2.1-or-later |
+| `dompdf/php-svg-lib` 1.0.2 | dompdf: SVG | LGPL-3.0-or-later |
+| `masterminds/html5` 2.11.0 | dompdf: розбір HTML5 | MIT |
+| `sabberworm/php-css-parser` 9.5.0 | dompdf: розбір CSS | MIT |
+| `phpoffice/phpspreadsheet` 1.30.6 (+ `markbaker/*`, `maennchen/zipstream-php`, `ezyang/htmlpurifier`, `composer/pcre`, `myclabs/php-enum`, `psr/*`) | XLSX-звіти | MIT (`htmlpurifier`: LGPL-2.1-or-later) |
+| `mk-j/php_xlsxwriter` 0.39 | потоковий XLSX | MIT |
+| `james-heinrich/getid3` 1.9.23 | теги MP3 | GPL-1.0-or-later / LGPL-3.0-only / MPL-2.0 (використано варіант LGPL-3.0) |
+| `monolog/monolog` 2.9.1, `cesargb/php-log-rotation` 2.6.0, `setasign/fpdi` 2.6.8, `symfony/polyfill-mbstring` | журнали та допоміжне | MIT |
+
 ## Авторство
 
 Це форк Dzvin PBX модуля [`mikopbx/ModuleExtendedCDRs`](https://github.com/mikopbx/ModuleExtendedCDRs)
