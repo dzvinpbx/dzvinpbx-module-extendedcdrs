@@ -481,8 +481,11 @@ class GetReport
          */
         if (class_exists(\XLSXWriter::class)) {
             $sheetName = 'Calls';
-            $writer = new \XLSXWriter();
+            $writer = new LocalizedXlsxWriter();
             $writer->setTempDir(sys_get_temp_dir());
+            $footerKey = 'repModuleExtendedCDRs_xlsx_FooterPage';
+            $footerText = Util::translate($footerKey);
+            $writer->setFooterText($footerText === $footerKey ? 'Page &P of &N' : $footerText);
 
             $headers = [
                 Util::translate('repModuleExtendedCDRs_cdr_ColumnTypeState') => 'string',

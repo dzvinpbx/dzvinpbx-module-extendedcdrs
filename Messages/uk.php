@@ -20,6 +20,7 @@ return [
     'repModuleExtendedCDRs_TitleOtherFilter' => 'Співробітники не вибрані...',
     'repModuleExtendedCDRs_PlaceholderFilter' => 'Пошук...',
     'repModuleExtendedCDRs_cdr_ColumnWaitTime' => 'Очікування',
+    'repModuleExtendedCDRs_xlsx_FooterPage' => 'Сторінка &P з &N',
     'repModuleExtendedCDRs_cdr_ColumnLine' => 'Провайдер',
     'repModuleExtendedCDRs_cdr_ColumnCallState' => 'Статус',
     'repModuleExtendedCDRs_cdr_ColumnTypeState' => 'Тип дзвінка',

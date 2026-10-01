@@ -56,6 +56,7 @@ combined with GPL-3.0 code). Reports are exported to Excel (XLSX) only; the modu
 
 ## Changelog
 
+- **1.46** - the page footer of exported XLSX reports is now localized according to the interface language (for example "Сторінка &P з &N" in Ukrainian) instead of the fixed English "Page &P".
 - **1.45** - PDF export removed; reports are exported to Excel (XLSX) only. The scheduled e-mail now carries an XLSX attachment, and `type=pdf` in the REST API returns HTTP 400. The dompdf and FPDI libraries are no longer bundled.
 
 ## Attribution

@@ -20,6 +20,7 @@ return [
     'repModuleExtendedCDRs_TitleOtherFilter' => 'No employees...',
     'repModuleExtendedCDRs_PlaceholderFilter' => 'Search...',
     'repModuleExtendedCDRs_cdr_ColumnWaitTime' => 'Wait time',
+    'repModuleExtendedCDRs_xlsx_FooterPage' => 'Page &P of &N',
     'repModuleExtendedCDRs_cdr_ColumnLine' => 'Provider',
     'repModuleExtendedCDRs_cdr_ColumnCallState' => 'State',
     'repModuleExtendedCDRs_cdr_ColumnTypeState' => 'Type call',

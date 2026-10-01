@@ -23,6 +23,7 @@ return [
     'repModuleExtendedCDRs_cdr_ColumnWaitTime'     => 'Ожидание',
     'repModuleExtendedCDRs_cdr_ColumnLine'         => 'Провайдер',
     'repModuleExtendedCDRs_cdr_ColumnCallState'    => 'Статус',
+    'repModuleExtendedCDRs_xlsx_FooterPage' => 'Страница &P из &N',
     'repModuleExtendedCDRs_cdr_ColumnTypeState'    => 'Тип звонка',
     'repModuleExtendedCDRs_cdr_CALL_STATE_OK'            => 'ок',
     'repModuleExtendedCDRs_cdr_CALL_STATE_TRANSFER'      => 'перевод',
