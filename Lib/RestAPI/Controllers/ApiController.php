@@ -105,6 +105,10 @@ class ApiController extends ModulesControllerBase
         ini_set('memory_limit', '2024M');
         ini_set('pcre.backtrack_limit', '10000000');
         $type           = $this->request->get('type');
+        if ($type === 'pdf') {
+            $this->sendError(400, 'Unsupported format "pdf": PDF export was removed, use type=xlsx');
+            return;
+        }
         $searchPhrase   = $this->request->get('search');
         if (!is_string($searchPhrase) || !ReportSearchPolicy::isValid($searchPhrase)) {
             $this->sendError(400);
@@ -117,9 +121,6 @@ class ApiController extends ModulesControllerBase
         $view->title = urldecode($this->request->get('title')??'');
         if($type === 'json'){
             $this->echoResponse((array)$view);
-        }elseif($type === 'pdf'){
-            GetReport::exporthistoryQueuePdf($view);
-            exit();
         }elseif ($type === 'xlsx'){
             GetReport::exporthistoryQueueXls($view);
             exit();
@@ -204,6 +205,10 @@ class ApiController extends ModulesControllerBase
             return;
         }
         $type           = $this->request->get('type');
+        if ($type === 'pdf') {
+            $this->sendError(400, 'Unsupported format "pdf": PDF export was removed, use type=xlsx');
+            return;
+        }
         $searchPhrase   = $this->request->get('search');
         if (!is_string($searchPhrase) || !ReportSearchPolicy::isValid($searchPhrase)) {
             $this->sendError(400);
@@ -214,8 +219,6 @@ class ApiController extends ModulesControllerBase
         $view->title = urldecode($this->request->get('title')??'');
         if($type === 'json'){
             $this->echoResponse((array)$view);
-        }elseif($type === 'pdf'){
-            GetReport::exportHistoryPdf($view);
         }elseif ($type === 'xlsx'){
             GetReport::exportHistoryXls($view);
         }
@@ -335,6 +338,10 @@ class ApiController extends ModulesControllerBase
         ini_set('memory_limit', '1024M');
         ini_set('pcre.backtrack_limit', '10000000');
         $type           = $this->request->get('type');
+        if ($type === 'pdf') {
+            $this->sendError(400, 'Unsupported format "pdf": PDF export was removed, use type=xlsx');
+            return;
+        }
         $searchPhrase   = $this->request->get('search');
         if (!is_string($searchPhrase) || !ReportSearchPolicy::isValid($searchPhrase)) {
             $this->sendError(400);
@@ -345,8 +352,6 @@ class ApiController extends ModulesControllerBase
         $view->title = urldecode($this->request->get('title')??'');
         if($type === 'json'){
             $this->echoResponse((array)$view);
-        }elseif($type === 'pdf'){
-            GetReport::exportOutgoingEmployeeCallsPrintPdf($view);
         }elseif ($type === 'xlsx'){
             GetReport::exportOutgoingEmployeeCallsPrintXls($view);
         }

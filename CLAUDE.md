@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ModuleExtendedCDRs is a Dzvin PBX extension module (fork of the MikoPBX module of the same name) for Extended Call Detail Records management and reporting. It synchronizes CDR data from Asterisk, provides call history views, generates reports (PDF/XLSX/JSON), exports via webhooks, and delivers scheduled reports by email.
+ModuleExtendedCDRs is a Dzvin PBX extension module (fork of the MikoPBX module of the same name) for Extended Call Detail Records management and reporting. It synchronizes CDR data from Asterisk, provides call history views, generates reports (XLSX/JSON; PDF export was removed), exports via webhooks, and delivers scheduled reports by email.
 
 - **Language**: PHP 7.4.6+
 - **Framework**: Phalcon 4.0 (MVC)
@@ -47,7 +47,7 @@ Asterisk CDR DB → ConnectorDB worker → SQLite (db/cdr.db)
                                             ↓
                               GetReport (formatting/filtering)
                                             ↓
-                         API / PDF / XLSX / Webhook / Email
+                         API / XLSX / Webhook / Email
 ```
 
 ### Key Layers
@@ -67,7 +67,7 @@ Asterisk CDR DB → ConnectorDB worker → SQLite (db/cdr.db)
 
 ### Key Classes
 
-- **`GetReport`** (`Lib/GetReport.php`) — Central report engine: `history()`, `historyDetail()`, `outgoingEmployeeCalls()`, `exportToPdf()`, `exportToXlsx()`
+- **`GetReport`** (`Lib/GetReport.php`) — Central report engine: `history()`, `historyDetail()`, `outgoingEmployeeCalls()`, `exportHistoryXls()`, `exportOutgoingEmployeeCallsPrintXls()` (both accept `$saveInFile` and return the file path)
 - **`ConnectorDB`** (`bin/ConnectorDB.php`) — Daemon syncing Asterisk CDR → local SQLite, extends `WorkerBase`
 - **`HistoryParser`** (`Lib/HistoryParser.php`) — CDR parsing and call history assembly
 - **`CacheManager`** (`Lib/CacheManager.php`) — Redis cache for sync progress tracking
@@ -93,7 +93,7 @@ Asterisk CDR DB → ConnectorDB worker → SQLite (db/cdr.db)
 Base path: `/pbxcore/api/modules/ModuleExtendedCDRs/`
 
 - `GET /records` — Download call recordings
-- `GET /exportHistory` — Export call history (JSON/PDF/XLSX)
+- `GET /exportHistory` — Export call history (JSON/XLSX; `type=pdf` returns HTTP 400 - use `xlsx`)
 - `GET /exportHistoryDetail` — Detailed CDR export
 - `GET /exportOutgoingEmployeeCalls` — Employee call reports
 - `GET /downloads` — File downloads

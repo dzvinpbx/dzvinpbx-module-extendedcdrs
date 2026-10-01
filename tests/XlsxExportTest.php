@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 /**
- * Renders the PDF reports through the real GetReport code path (dompdf) with a
- * small Ukrainian sample and checks that a valid PDF with an embedded Cyrillic
- * capable font comes out. Needs `composer install` to have been run.
+ * Writes the XLSX reports to a file through the real GetReport code path
+ * (the same one the scheduled e-mail uses) with a Ukrainian sample and checks
+ * that a valid workbook with the Cyrillic text comes out. Needs `composer install`.
  *
- *   php tests/PdfExportTest.php
+ *   php tests/XlsxExportTest.php
  */
 
 namespace Phalcon {
@@ -42,11 +42,28 @@ namespace DzvinPBX\Core\System {
 namespace {
     use Modules\ModuleExtendedCDRs\Lib\GetReport;
 
-    function assertPdf(bool $condition, string $message): void
+    function assertXlsx(bool $condition, string $message): void
     {
         if (!$condition) {
             throw new RuntimeException($message);
         }
+    }
+
+    function xlsxContains(string $file, string $needle): bool
+    {
+        $zip = new ZipArchive();
+        assertXlsx($zip->open($file) === true, "$file is not a zip archive");
+        assertXlsx($zip->locateName('xl/workbook.xml') !== false, "$file has no xl/workbook.xml");
+        $found = false;
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $name = (string)$zip->getNameIndex($i);
+            if (str_starts_with($name, 'xl/') && str_contains((string)$zip->getFromIndex($i), $needle)) {
+                $found = true;
+                break;
+            }
+        }
+        $zip->close();
+        return $found;
     }
 
     $root = dirname(__DIR__);
@@ -54,12 +71,13 @@ namespace {
     require_once $root . '/Lib/DzvinPBXVersion.php';
     require_once $root . '/Lib/GetReport.php';
 
-    $calls = [];
-    for ($i = 0; $i < 600; $i++) {
-        $calls[] = [
+    $history = (object)[
+        'title' => 'Звіт: історія дзвінків',
+        'searchPhrase' => json_encode(['dateRangeSelector' => '01.09.2026 - 30.09.2026']),
+        'data' => [[
             'typeCallDesc' => 'Вхідний',
             'line' => 'Транк Київстар',
-            'DT_RowId' => 'id-' . $i,
+            'DT_RowId' => 'id-1',
             '4' => [[
                 'start' => '2026-09-30 10:00:00',
                 'src_num' => '380441234567',
@@ -68,12 +86,7 @@ namespace {
                 'billsec' => '00:42',
                 'stateCall' => 'Відповіли',
             ]],
-        ];
-    }
-    $history = (object)[
-        'title' => 'Звіт: історія дзвінків',
-        'searchPhrase' => json_encode(['dateRangeSelector' => '01.09.2026 - 30.09.2026']),
-        'data' => $calls,
+        ]],
     ];
     $employees = (object)[
         'title' => 'Вихідні дзвінки співробітників',
@@ -87,28 +100,17 @@ namespace {
             'countCalls' => 4,
         ]],
     ];
-    $queue = (object)[
-        'title' => 'Черги',
-        'searchPhrase' => json_encode(['dateRangeSelector' => 'сьогодні']),
-        'data' => [[
-            'date' => '2026-09-30', 'queueName' => 'Підтримка', 'totalCalls' => 5, 'answered' => 4,
-            'missed' => 1, 'answeredQueue' => 4, 'avgWaitTime' => '0:10', 'avgMissed' => '0:20',
-            'avgWaitTimeQueue' => '0:12',
-        ]],
-    ];
 
-    $files = [
-        'history' => GetReport::exportHistoryPdf($history, true),
-        'employees' => GetReport::exportOutgoingEmployeeCallsPrintPdf($employees, true),
-        'queue' => GetReport::exportHistoryQueuePdf($queue, true),
+    $cases = [
+        'history' => [GetReport::exportHistoryXls($history, true), 'Транк Київстар'],
+        'employees' => [GetReport::exportOutgoingEmployeeCallsPrintXls($employees, true), 'Іваненко Їжак Єва'],
     ];
-    foreach ($files as $name => $file) {
-        assertPdf(is_file($file) && filesize($file) > 1000, "$name: PDF was not written");
-        $head = (string)file_get_contents($file, false, null, 0, 5);
-        assertPdf($head === '%PDF-', "$name: not a PDF");
-        $pdf = (string)file_get_contents($file);
-        assertPdf(str_contains($pdf, 'DejaVu'), "$name: DejaVu font is not embedded");
+    foreach ($cases as $name => [$file, $needle]) {
+        assertXlsx(str_ends_with($file, '.xlsx'), "$name: returned path must end with .xlsx");
+        assertXlsx(is_file($file) && filesize($file) > 500, "$name: XLSX was not written to $file");
+        assertXlsx(xlsxContains($file, $needle), "$name: Ukrainian text is missing from the workbook");
         echo "$name: $file (" . filesize($file) . " bytes)\n";
+        unlink($file);
     }
-    echo "PdfExportTest: OK\n";
+    echo "XlsxExportTest: OK\n";
 }

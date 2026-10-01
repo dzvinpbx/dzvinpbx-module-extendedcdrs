@@ -12,7 +12,7 @@ Extended call detail records (CDR) module for Dzvin PBX: a detailed call history
 ## Features
 
 - **Call history** with filters by employee, department, queue, provider, call state and period
-- **Reports** in PDF, XLSX and JSON, including outgoing calls per employee and incoming calls per queue
+- **Reports** in Excel (XLSX) and JSON, including outgoing calls per employee and incoming calls per queue
 - **Scheduled reports** delivered by e-mail
 - **Export** of call records to an arbitrary HTTP endpoint (webhooks)
 - **Recordings** - download a single recording or an archive of recordings matching the filters
@@ -44,23 +44,19 @@ Dependencies are installed from `composer.json`; `vendor/` is not stored in the 
 
 ## Third-party libraries
 
-The PDF reports are rendered with [dompdf](https://github.com/dompdf/dompdf) and its bundled
-DejaVu Sans font (Unicode, covers Cyrillic). Earlier builds used mPDF, which is GPL-2.0-only and
-therefore not compatible with this module's GPL-3.0-or-later; it is no longer used. All bundled
-libraries are licensed under terms compatible with GPL-3.0 (the LGPL libraries may be combined
-with GPL-3.0 code):
+All bundled libraries are licensed under terms compatible with GPL-3.0 (the LGPL libraries may be
+combined with GPL-3.0 code). Reports are exported to Excel (XLSX) only; the module bundles no PDF library:
 
 | Package | Purpose | Licence |
 |---|---|---|
-| `dompdf/dompdf` 3.1.6 | PDF reports (replaces mPDF) | LGPL-2.1 |
-| `dompdf/php-font-lib` 1.0.2 | dompdf: fonts | LGPL-2.1-or-later |
-| `dompdf/php-svg-lib` 1.0.2 | dompdf: SVG | LGPL-3.0-or-later |
-| `masterminds/html5` 2.11.0 | dompdf: HTML5 parser | MIT |
-| `sabberworm/php-css-parser` 9.5.0 | dompdf: CSS parser | MIT |
 | `phpoffice/phpspreadsheet` 1.30.6 (+ `markbaker/*`, `maennchen/zipstream-php`, `ezyang/htmlpurifier`, `composer/pcre`, `myclabs/php-enum`, `psr/*`) | XLSX reports | MIT (`htmlpurifier`: LGPL-2.1-or-later) |
 | `mk-j/php_xlsxwriter` 0.39 | streaming XLSX | MIT |
 | `james-heinrich/getid3` 1.9.23 | MP3 tags | GPL-1.0-or-later / LGPL-3.0-only / MPL-2.0 (LGPL-3.0 option used) |
-| `monolog/monolog` 2.9.1, `cesargb/php-log-rotation` 2.6.0, `setasign/fpdi` 2.6.8, `symfony/polyfill-mbstring` | logging and helpers | MIT |
+| `monolog/monolog` 2.9.1, `cesargb/php-log-rotation` 2.6.0, `symfony/polyfill-mbstring` | logging and helpers | MIT |
+
+## Changelog
+
+- **1.45** - PDF export removed; reports are exported to Excel (XLSX) only. The scheduled e-mail now carries an XLSX attachment, and `type=pdf` in the REST API returns HTTP 400. The dompdf and FPDI libraries are no longer bundled.
 
 ## Attribution
 

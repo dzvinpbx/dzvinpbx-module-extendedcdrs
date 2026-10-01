@@ -24,8 +24,6 @@ use DzvinPBX\Common\Models\IncomingRoutingTable;
 use DzvinPBX\Common\Providers\PBXConfModulesProvider;
 use DzvinPBX\Modules\Config\CDRConfigInterface;
 use Modules\ModuleUsersGroups\Models\GroupMembers;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -83,99 +81,6 @@ class GetReport
         }
 
         return $tmpDir;
-    }
-
-    /**
-     * Shared CSS for all PDF reports. DejaVu Sans ships with dompdf and covers Cyrillic.
-     */
-    private const PDF_STYLE = '@page { margin: 16mm 15mm; } '
-        . 'body { font-family: "DejaVu Sans", sans-serif; font-size: 9pt; } '
-        . 'h2 { font-size: 15pt; margin: 0 0 6px 0; } h3 { font-size: 12pt; margin: 0 0 8px 0; } '
-        . 'table { border-collapse: collapse; width: 100%; } '
-        . 'th, td { border: 1px solid #000; } thead { display: table-header-group; }';
-
-    /**
-     * Renders the given HTML body into a PDF (A4 portrait) and returns its binary content.
-     */
-    private static function renderPdf(string $htmlBody, string $tmpDir): string
-    {
-        $options = new Options();
-        $options->set('defaultFont', 'DejaVu Sans');
-        $options->set('defaultPaperSize', 'a4');
-        $options->set('defaultPaperOrientation', 'portrait');
-        $options->set('isRemoteEnabled', false);
-        $options->set('isPhpEnabled', false);
-        $options->set('isFontSubsettingEnabled', true);
-        $options->set('tempDir', $tmpDir);
-        $options->set('fontCache', $tmpDir);
-        $options->set('chroot', [dirname(__DIR__), $tmpDir]);
-
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml(
-            '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' . self::PDF_STYLE . '</style></head><body>'
-            . $htmlBody . '</body></html>',
-            'UTF-8'
-        );
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        return (string)$dompdf->output();
-    }
-
-    /**
-     * Saves the PDF into $filename or sends it to the client as a download.
-     */
-    private static function outputPdf(string $pdf, string $filename, string $downloadName, bool $saveInFile): void
-    {
-        if ($saveInFile === true) {
-            file_put_contents($filename, $pdf);
-            return;
-        }
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="' . $downloadName . '"');
-        header('Content-Length: ' . strlen($pdf));
-        header('Cache-Control: private, max-age=0, must-revalidate');
-        echo $pdf;
-    }
-
-    public static function exportHistoryQueuePdf($view, $saveInFile = false): string
-    {
-        $tmpDir = self::getTmpDir();
-        $html = '';
-        if(!empty($view->title)){
-            $html.= '<h2>' . $view->title . '</h2>';
-        }
-        $html.= '<h3>' . json_decode($view->searchPhrase, true)['dateRangeSelector'] . '</h3>';
-        $html .= '<table border="1" cellpadding="10" cellspacing="0" style="width: 100%;">';
-        $html .= '<thead><tr>' . 
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_Date') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_Queue') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_TotalCalls') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_Answered') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_Missed') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_AnsweredQueue') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_AvgWaitTime') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_AvgMissed') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_CdrQueue_AvgWaitTimeQueue') . '</th>' .
-            '</tr></thead>';
-        $html .= '<tbody>';
-        foreach ($view->data as $index => $item) {
-            $rowStyle = ($index % 2 == 1) ? 'background-color: #f0f0f0;' : '';
-            $html .= '<tr>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['date']) . '</td>';
-            $html .= '<td style="background-color: #d3d3d3;">' . htmlspecialchars($item['queueName']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['totalCalls']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['answered']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['missed']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['answeredQueue']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['avgWaitTime']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['avgMissed']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['avgWaitTimeQueue']) . '</td>';
-            $html .= '</tr>';
-        }
-        $html .= '</tbody></table>';
-        $filename = $tmpDir . '/history-queue-calls-' . time() . '.pdf';
-        self::outputPdf(self::renderPdf($html, $tmpDir), $filename, 'history-queue-calls.pdf', $saveInFile);
-        return $filename;
     }
 
     public static function exporthistoryQueueXls($view): void
@@ -561,8 +466,15 @@ class GetReport
         return $output;
     }
 
-    public static function exportHistoryXls($view): void
+    /**
+     * Exports the call history to XLSX.
+     *
+     * With $saveInFile the workbook is written to a temporary file and its path is returned
+     * (used by the scheduled e-mail); otherwise it is streamed to the client as a download.
+     */
+    public static function exportHistoryXls($view, $saveInFile = false): string
     {
+        $filename = self::getTmpDir() . '/calls_report-' . time() . '.xlsx';
         /**
          * PhpSpreadsheet keeps the whole workbook in memory and can easily OOM on large exports.
          * Prefer streaming XLSXWriter (already installed via composer) to minimize RAM usage.
@@ -610,11 +522,15 @@ class GetReport
                 }
             }
 
+            if ($saveInFile === true) {
+                $writer->writeToFile($filename);
+                return $filename;
+            }
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             header('Content-Disposition: attachment; filename="calls_report.xlsx"');
             header('Cache-Control: max-age=0');
             $writer->writeToStdOut();
-            return;
+            return $filename;
         }
 
         // Fallback to PhpSpreadsheet if XLSXWriter is not available.
@@ -652,75 +568,14 @@ class GetReport
         $writer->setPreCalculateFormulas(false);
         $writer->setUseDiskCaching(true, sys_get_temp_dir());
 
+        if ($saveInFile === true) {
+            $writer->save($filename);
+            return $filename;
+        }
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="calls_report.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
-    }
-
-    public static function exportHistoryPdf($view, $saveInFile = false): string
-    {
-        $tmpDir = self::getTmpDir();
-        // dompdf lays out the whole document in memory, so keep the markup compact:
-        // split the rows into small tables (header repeated) separated by page breaks.
-        $html = '';
-        if (!empty($view->title)) {
-            $html .= '<h2>' . htmlspecialchars((string)$view->title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h2>';
-        }
-        $search = json_decode((string)($view->searchPhrase ?? ''), true);
-        $dateRangeSelector = $search['dateRangeSelector'] ?? '';
-        $html .= '<h3>' . htmlspecialchars((string)$dateRangeSelector, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h3>';
-
-        $tableHeader = '<table border="1" cellpadding="4" cellspacing="0" style="width: 100%;">' .
-            '<thead><tr>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_cdr_ColumnTypeState') . '</th>' .
-            '<th>' . Util::translate('cdr_ColumnDate') . '</th>' .
-            '<th>' . Util::translate('cdr_ColumnFrom') . '</th>' .
-            '<th>' . Util::translate('cdr_ColumnTo') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_cdr_ColumnLine') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_cdr_ColumnWaitTime') . '</th>' .
-            '<th>' . Util::translate('cdr_ColumnDuration') . '</th>' .
-            '<th>' . Util::translate('repModuleExtendedCDRs_cdr_ColumnCallState') . '</th>' .
-            '<th>id</th>' .
-            '</tr></thead><tbody>';
-        $tableFooter = '</tbody></table>';
-
-        $rowsChunk = '';
-        $rowsInChunk = 0;
-        $flushEvery = 250; // rows per table chunk
-
-        foreach (($view->data ?? []) as $baseItem) {
-            $typeCallDesc = htmlspecialchars((string)($baseItem['typeCallDesc'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $line = htmlspecialchars((string)($baseItem['line'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $linkedId = htmlspecialchars((string)($baseItem['DT_RowId'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            foreach (($baseItem['4'] ?? []) as $item) {
-                $rowsChunk .= '<tr>' .
-                    '<td>' . $typeCallDesc . '</td>' .
-                    '<td>' . htmlspecialchars((string)($item['start'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</td>' .
-                    '<td>' . htmlspecialchars((string)($item['src_num'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</td>' .
-                    '<td>' . htmlspecialchars((string)($item['dst_num'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</td>' .
-                    '<td>' . $line . '</td>' .
-                    '<td>' . htmlspecialchars((string)($item['waitTime'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</td>' .
-                    '<td>' . htmlspecialchars((string)($item['billsec'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</td>' .
-                    '<td>' . htmlspecialchars((string)($item['stateCall'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</td>' .
-                    '<td>' . $linkedId . '</td>' .
-                    '</tr>';
-
-                $rowsInChunk++;
-                if ($rowsInChunk >= $flushEvery) {
-                    $html .= $tableHeader . $rowsChunk . $tableFooter . '<div style="page-break-after: always;"></div>';
-                    $rowsChunk = '';
-                    $rowsInChunk = 0;
-                }
-            }
-        }
-
-        if ($rowsChunk !== '') {
-            $html .= $tableHeader . $rowsChunk . $tableFooter;
-        }
-        $filename = $tmpDir . '/calls_report-' . time() . '.pdf';
-        self::outputPdf(self::renderPdf($html, $tmpDir), $filename, 'calls_report.pdf', $saveInFile);
-
         return $filename;
     }
 
@@ -829,43 +684,12 @@ class GetReport
         return $resultView;
     }
 
-    public static function exportOutgoingEmployeeCallsPrintPdf($view, $saveInFile = false): string
+    /**
+     * Exports the per-employee outgoing call totals to XLSX; see exportHistoryXls() for $saveInFile.
+     */
+    public static function exportOutgoingEmployeeCallsPrintXls($view, $saveInFile = false): string
     {
-        $tmpDir = self::getTmpDir();
-        $html = '';
-        if(!empty($view->title)){
-            $html.= '<h2>' . $view->title . '</h2>';
-        }
-        $html.= '<h3>' . json_decode($view->searchPhrase, true)['dateRangeSelector'] . '</h3>';
-        $html .= '<table border="1" cellpadding="10" cellspacing="0" style="width: 100%;">';
-        $html .= '<thead><tr>' . '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_callerId') . '</th>' .
-                    '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_number') . '</th>' .
-                    '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_billHourCalls') . '</th>' .
-                    '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_billMinCalls') . '</th>' .
-                    '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_billSecCalls') . '</th>' .
-                    '<th>' . Util::translate('repModuleExtendedCDRs_outgoingEmployeeCalls_countCalls') .
-                    '</th>' .
-                 '</tr></thead>';
-        $html .= '<tbody>';
-        foreach ($view->data as $index => $item) {
-            $rowStyle = ($index % 2 == 1) ? 'background-color: #f0f0f0;' : '';
-            $html .= '<tr>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['callerId']) . '</td>';
-            $html .= '<td style="background-color: #d3d3d3;">' . htmlspecialchars($item['number']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['billHourCalls']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['billMinCalls']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['billSecCalls']) . '</td>';
-            $html .= '<td style="' . $rowStyle . '">' . htmlspecialchars($item['countCalls']) . '</td>';
-            $html .= '</tr>';
-        }
-        $html .= '</tbody></table>';
-        $filename = $tmpDir . '/outgoing-employee-calls-' . time() . '.pdf';
-        self::outputPdf(self::renderPdf($html, $tmpDir), $filename, 'outgoing-employee-calls.pdf', $saveInFile);
-        return $filename;
-    }
-
-    public static function exportOutgoingEmployeeCallsPrintXls($view): void
-    {
+        $filename = self::getTmpDir() . '/outgoing-employee-calls-' . time() . '.xlsx';
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $headers = [
@@ -902,10 +726,15 @@ class GetReport
         }
         $writer = new Xlsx($spreadsheet);
 
+        if ($saveInFile === true) {
+            $writer->save($filename);
+            return $filename;
+        }
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="outgoing-employee-calls.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+        return $filename;
     }
 
     public function historyDetail($dateFrom, $dateTo, $phoneNumbers, $excludeNumbers):array

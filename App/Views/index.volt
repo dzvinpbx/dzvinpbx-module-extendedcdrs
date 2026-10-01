@@ -128,7 +128,6 @@
                  <div class="ui action input">
                     <input style="height: 40px; width: 200px; min-width: 150px;" type="search" id="globalsearch" placeholder="{{ t._('repModuleExtendedCDRs_FindCallsPlaceholder') }}" aria-controls="KeysTable">
                     <button style="height: 40px;" id="createExcelButton" class="ui icon basic button"> <i class="green file excel outline icon"></i></button>
-                    <button style="height: 40px;" id="createPdfButton" class="ui icon basic button"> <i class="red file pdf outline icon"></i></button>
                     <button style="height: 40px;" type="button" title="{{ t._('repModuleExtendedCDRs_ArchiveDownload') }}" aria-label="{{ t._('repModuleExtendedCDRs_ArchiveDownload') }}" id="downloadRecords" class="ui icon basic button"> <i class="download icon"></i></button>
                     <button style="height: 40px;" type="button" id="saveSearchSettings" class="ui icon basic button">
                          <i class="blue save outline icon"></i>

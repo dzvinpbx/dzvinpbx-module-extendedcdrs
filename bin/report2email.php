@@ -40,12 +40,12 @@ if('CallDetails' === $settings->reportNameID){
     $gr = new GetReport();
     $view = $gr->history($settings->searchText);
     $view->title = $settings->variantName;
-    $filename = GetReport::exportHistoryPdf($view, true);
+    $filename = GetReport::exportHistoryXls($view, true);
 }elseif ('OutgoingEmployeeCalls' === $settings->reportNameID){
     $gr = new GetReport();
     $view = $gr->outgoingEmployeeCalls($settings->searchText);
     $view->title = $settings->variantName;
-    $filename = GetReport::exportOutgoingEmployeeCallsPrintPdf($view, true);
+    $filename = GetReport::exportOutgoingEmployeeCallsPrintXls($view, true);
 }else{
     SystemMessages::sysLogMsg($ident, "unknow reportNameID: $settings->reportNameID");
     exit(0);

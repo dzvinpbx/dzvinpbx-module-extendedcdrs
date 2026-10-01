@@ -28,13 +28,11 @@ assertDependencyPolicy(
     version_compare($versions['phpoffice/phpspreadsheet'], '1.30.5', '>='),
     'PhpSpreadsheet must be at least 1.30.5; locked ' . $versions['phpoffice/phpspreadsheet']
 );
-assertDependencyPolicy(isset($versions['setasign/fpdi']), 'FPDI must be locked');
-assertDependencyPolicy(
-    version_compare($versions['setasign/fpdi'], '2.6.7', '>='),
-    'FPDI must be at least 2.6.7; locked ' . $versions['setasign/fpdi']
-);
 
-assertDependencyPolicy(isset($versions['dompdf/dompdf']), 'dompdf must be locked');
-assertDependencyPolicy(!isset($versions['mpdf/mpdf']), 'mPDF (GPL-2.0-only) must not be used');
+// PDF export was removed: reports are exported to XLSX only, so no PDF library may come back.
+foreach (['dompdf/dompdf', 'dompdf/php-font-lib', 'dompdf/php-svg-lib', 'setasign/fpdi', 'mpdf/mpdf', 'tecnickcom/tcpdf', 'setasign/fpdf'] as $pdfPackage) {
+    assertDependencyPolicy(!isset($versions[$pdfPackage]), "$pdfPackage must not be locked (PDF export was removed)");
+    assertDependencyPolicy(!isset($composer['require'][$pdfPackage]), "$pdfPackage must not be required");
+}
 
 echo "DependencyPolicyTest: OK\n";

@@ -12,7 +12,7 @@
 ## Можливості
 
 - **Історія дзвінків** з відборами за співробітником, відділом, чергою, провайдером, статусом дзвінка й періодом
-- **Звіти** у PDF, XLSX і JSON, зокрема вихідні дзвінки співробітників і вхідні на чергу
+- **Звіти** в Excel (XLSX) і JSON, зокрема вихідні дзвінки співробітників і вхідні на чергу
 - **Звіти за розкладом** з надсиланням на електронну пошту
 - **Експорт** записів про дзвінки на довільну HTTP-адресу (вебхуки)
 - **Записи розмов** - завантаження окремого запису або архіву записів за вибраними фільтрами
@@ -44,22 +44,19 @@ composer install --no-dev
 
 ## Сторонні бібліотеки
 
-PDF-звіти формуються бібліотекою [dompdf](https://github.com/dompdf/dompdf) зі шрифтом DejaVu Sans
-з її складу (Unicode, підтримує кирилицю). Раніше використовувалась mPDF, яка має ліцензію
-GPL-2.0-only і несумісна з GPL-3.0-or-later цього модуля; її більше не застосовують. Усі вбудовані
-бібліотеки мають GPL-3.0-сумісні ліцензії (LGPL-бібліотеки можна поєднувати з кодом GPL-3.0):
+Усі вбудовані бібліотеки мають GPL-3.0-сумісні ліцензії (LGPL-бібліотеки можна поєднувати з кодом
+GPL-3.0). Звіти експортуються лише в Excel (XLSX); PDF-бібліотек модуль не містить:
 
 | Пакет | Призначення | Ліцензія |
 |---|---|---|
-| `dompdf/dompdf` 3.1.6 | PDF-звіти (замість mPDF) | LGPL-2.1 |
-| `dompdf/php-font-lib` 1.0.2 | dompdf: шрифти | LGPL-2.1-or-later |
-| `dompdf/php-svg-lib` 1.0.2 | dompdf: SVG | LGPL-3.0-or-later |
-| `masterminds/html5` 2.11.0 | dompdf: розбір HTML5 | MIT |
-| `sabberworm/php-css-parser` 9.5.0 | dompdf: розбір CSS | MIT |
 | `phpoffice/phpspreadsheet` 1.30.6 (+ `markbaker/*`, `maennchen/zipstream-php`, `ezyang/htmlpurifier`, `composer/pcre`, `myclabs/php-enum`, `psr/*`) | XLSX-звіти | MIT (`htmlpurifier`: LGPL-2.1-or-later) |
 | `mk-j/php_xlsxwriter` 0.39 | потоковий XLSX | MIT |
 | `james-heinrich/getid3` 1.9.23 | теги MP3 | GPL-1.0-or-later / LGPL-3.0-only / MPL-2.0 (використано варіант LGPL-3.0) |
-| `monolog/monolog` 2.9.1, `cesargb/php-log-rotation` 2.6.0, `setasign/fpdi` 2.6.8, `symfony/polyfill-mbstring` | журнали та допоміжне | MIT |
+| `monolog/monolog` 2.9.1, `cesargb/php-log-rotation` 2.6.0, `symfony/polyfill-mbstring` | журнали та допоміжне | MIT |
+
+## Історія змін
+
+- **1.45** - експорт у PDF прибрано; звіти експортуються лише в Excel (XLSX). Звіт за розкладом надходить на e-mail як вкладення XLSX, а `type=pdf` у REST API повертає HTTP 400. Бібліотеки dompdf і FPDI більше не входять до збірки.
 
 ## Авторство
 

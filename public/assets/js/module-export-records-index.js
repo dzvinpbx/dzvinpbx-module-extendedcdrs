@@ -629,10 +629,7 @@ var ModuleExtendedCDRs = {
       ModuleExtendedCDRs.applyFilter();
     });
     $('#createExcelButton').on('click', function (e) {
-      ModuleExtendedCDRs.startCreateExcelPDF('xlsx');
-    });
-    $('#createPdfButton').on('click', function (e) {
-      ModuleExtendedCDRs.startCreateExcelPDF('pdf');
+      ModuleExtendedCDRs.startCreateExcel('xlsx');
     });
     $('#downloadRecords').on('click', function (e) {
       e.preventDefault();
@@ -1268,7 +1265,7 @@ var ModuleExtendedCDRs = {
       }
     });
   },
-  startCreateExcelPDF: function startCreateExcelPDF(type) {
+  startCreateExcel: function startCreateExcel(type) {
     var reportNameID = $('#currentReportNameID').val();
     var currentVariantId = $('#currentVariantId').val();
     var title = '';
